@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Todo List</title>
+    <style>
+        body {
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff;
+            max-width: 350px;
+            margin: 60px auto 0 auto;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(60,60,60,0.15);
+            padding: 32px 28px 24px 28px;
+        }
+        h2 {
+            text-align: center;
+            color: #ff7e5f;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 16px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            font-size: 15px;
+            background: #f9f9f9;
+            transition: border 0.2s;
+        }
+        input:focus {
+            border: 1.5px solid #ff7e5f;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            background: linear-gradient(90deg, #ff7e5f 0%, #feb47b 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #feb47b 0%, #ff7e5f 100%);
+            transform: translateY(-2px) scale(1.04);
+        }
+        .switch-link {
+            display: block;
+            text-align: center;
+            margin-top: 14px;
+            color: #ff7e5f;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .switch-link:hover {
+            text-decoration: underline;
+        }
+        .error {
+            color: #d32f2f;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <div id="error" class="error"></div>
+        <form id="loginForm">
+            <input type="text" id="loginUser" placeholder="Username" required>
+            <input type="password" id="loginPass" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <a href="signup.html" class="switch-link">Don't have an account? Sign up</a>
+    </div>
+    <script>
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value;
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            if (users[user] && users[user].password === pass) {
+                localStorage.setItem('currentUser', user);
+                // Load this user's tasks, or empty array if none
+                localStorage.setItem('tasks', JSON.stringify(users[user].tasks || []));
+                window.location.href = "index.html";
+            } else {
+                document.getElementById('error').textContent = "Invalid username or password.";
+            }
+        };
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo Dashboard</title>
+    <style>
+        body {
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff;
+            max-width: 600px;
+            margin: 40px auto 0 auto;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(60,60,60,0.15);
+            padding: 32px 28px 24px 28px;
+        }
+        h2 {
+            text-align: center;
+            color: #ff7e5f;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .summary-box {
+            background: linear-gradient(90deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 12px;
+            padding: 18px 30px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(255,126,95,0.07);
+            min-width: 120px;
+        }
+        .summary-box h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            color: #ff7e5f;
+        }
+        .summary-box .count {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+        .task-list-section {
+            margin-bottom: 28px;
+        }
+        .task-list-section h4 {
+            color: #ff7e5f;
+            margin-bottom: 10px;
+        }
+        ul.task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .task-item {
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            padding: 10px 14px;
+            box-shadow: 0 2px 8px rgba(255,126,95,0.07);
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+            background: #e0e0e0;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #ff7e5f;
+            text-decoration: none;
+            font-size: 15px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Todo Dashboard</h2>
+        <div class="summary">
+            <div class="summary-box">
+                <h3>Completed</h3>
+                <div class="count" id="completedCount">0</div>
+            </div>
+            <div class="summary-box">
+                <h3>Uncompleted</h3>
+                <div class="count" id="uncompletedCount">0</div>
+            </div>
+            <div class="summary-box">
+                <h3>Total</h3>
+                <div class="count" id="totalCount">0</div>
+            </div>
+        </div>
+        <div class="task-list-section">
+            <h4>Uncompleted Tasks</h4>
+            <ul class="task-list" id="uncompletedTasks"></ul>
+        </div>
+        <div class="task-list-section">
+            <h4>Completed Tasks</h4>
+            <ul class="task-list" id="completedTasks"></ul>
+        </div>
+        <a href="index.html" class="back-link">← Back to Todo List</a>
+        <a href="#" id="logoutLink" style="text-decoration: none; color: #ff7e5f; font-size: 14px; display: block; text-align: center; margin-bottom: 20px;">Logout</a>
+    </div>
+    <script>
+        // Read tasks from localStorage (same as main app)
+        const allTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        const completed = allTasks.filter(t => t.completed);
+        const uncompleted = allTasks.filter(t => !t.completed);
+
+        document.getElementById('completedCount').textContent = completed.length;
+        document.getElementById('uncompletedCount').textContent = uncompleted.length;
+        document.getElementById('totalCount').textContent = allTasks.length;
+
+        function renderList(list, elementId, completedClass) {
+            const ul = document.getElementById(elementId);
+            ul.innerHTML = '';
+            if (list.length === 0) {
+                ul.innerHTML = `<li style="text-align:center;color:#aaa;">No tasks.</li>`;
+                return;
+            }
+            list.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'task-item' + (completedClass ? ' completed' : '');
+                li.innerHTML = `
+                    <span>${task.title}${task.category ? ' <span style="color:#aaa;">[' + task.category + ']</span>' : ''}${task.deadline ? ' <span style="color:#aaa;">(' + task.deadline + ')</span>' : ''}</span>
+                `;
+                ul.appendChild(li);
+            });
+        }
+
+        renderList(uncompleted, 'uncompletedTasks', false);
+        renderList(completed, 'completedTasks', true);
+
+        // Logout functionality
+document.getElementById('logoutLink').onclick = function() {
+    localStorage.removeItem('currentUser');
+    window.location.href = "login.html";
+};
+
+        // Redirect to login if no user is logged in
+        if (!localStorage.getItem('currentUser')) {
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>

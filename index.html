@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo List (JS Only)</title>
+</head>
+<!-- Add this inside your <head> tag -->
+<style>
+body {
+    background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+.container {
+    background: #fff;
+    max-width: 500px;
+    margin: 40px auto 0 auto;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(60,60,60,0.15);
+    padding: 32px 28px 24px 28px;
+}
+h2 {
+    text-align: center;
+    color: #ff7e5f;
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+}
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.filter-bar select,
+.filter-bar input[type="text"] {
+    padding: 7px 10px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    font-size: 15px;
+    background: #f9f9f9;
+    transition: border 0.2s;
+}
+.filter-bar select:focus,
+.filter-bar input[type="text"]:focus {
+    border: 1.5px solid #ff7e5f;
+    outline: none;
+}
+#addForm {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+#addForm input[type="text"],
+#addForm input[type="date"] {
+    flex: 1 1 120px;
+    padding: 8px 10px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    font-size: 15px;
+    background: #f9f9f9;
+    transition: border 0.2s;
+}
+#addForm input:focus {
+    border: 1.5px solid #ff7e5f;
+    outline: none;
+}
+#addForm button {
+    background: linear-gradient(90deg, #ff7e5f 0%, #feb47b 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    font-weight: 500;
+}
+#addForm button:hover {
+    background: linear-gradient(90deg, #feb47b 0%, #ff7e5f 100%);
+    transform: translateY(-2px) scale(1.04);
+}
+ul#tasks {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.task-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 13px 14px;
+    box-shadow: 0 2px 8px rgba(255,126,95,0.07);
+    transition: box-shadow 0.2s;
+}
+.task-item.completed {
+    opacity: 0.6;
+    text-decoration: line-through;
+    background: #e0e0e0;
+}
+.task-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.task-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+.task-meta span {
+    font-size: 13px;
+    color: #888;
+    margin-right: 10px;
+}
+.task-actions button {
+    margin-left: 6px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+    cursor: pointer;
+    background: #fff;
+    color: #ff7e5f;
+    border: 1px solid #ff7e5f;
+    transition: background 0.18s, color 0.18s;
+}
+.task-actions button:hover {
+    background: #ff7e5f;
+    color: #fff;
+}
+@media (max-width: 600px) {
+    .container {
+        padding: 14px 4vw 18px 4vw;
+    }
+    .filter-bar, #addForm {
+        flex-direction: column;
+        gap: 7px;
+    }
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 18px;
+    gap: 10px;
+}
+.tab-btn {
+    background: #fff;
+    border: 1.5px solid #ff7e5f;
+    color: #ff7e5f;
+    padding: 8px 22px;
+    border-radius: 6px 6px 0 0;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.18s, color 0.18s;
+}
+.tab-btn.active, .tab-btn:hover {
+    background: linear-gradient(90deg, #ff7e5f 0%, #feb47b 100%);
+    color: #fff;
+}
+</style>
+<body>
+    <div class="container">
+        <h2>Todo List</h2>
+        <a href="login.html?" style="text-decoration: none; color: #ff7e5f; font-size: 14px; display: block; text-align: center; margin-bottom: 20px;">Login</a>
+        <a href="signup.html" style="text-decoration: none; color: #ff7e5f; font-size: 14px; display: block; text-align: center; margin-bottom: 20px;">Sign Up</a>
+        <a href="dash.html" style="text-decoration: none; color: #ff7e5f; font-size: 14px; display: block; text-align: center; margin-bottom: 20px;">Dashboard</a>
+<div class="tabs">
+    <button id="tab-tasks" class="tab-btn active">View Tasks</button>
+    <button id="tab-schedule" class="tab-btn">My Schedule</button>
+</div>
+        <div class="filter-bar">
+            <select id="filterCategory">
+                <option value="">All Categories</option>
+            </select>
+            <select id="filterStatus">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+            </select>
+            <input type="text" id="searchTask" placeholder="Search...">
+        </div>
+        <form id="addForm">
+            <input type="text" id="title" placeholder="Task title" required>
+            <input type="text" id="category" placeholder="Category">
+            <input type="date" id="deadline" placeholder="Deadline">
+            <button type="submit">Add Task</button>
+        </form>
+        <ul id="tasks"></ul>
+        <ul id="schedule" style="display:none;"></ul>
+    </div>
+    <script>
+        let allTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(allTasks));
+        }
+
+        function renderCategoryFilter(tasks) {
+            const categories = [...new Set(tasks.map(t => t.category).filter(Boolean))];
+            const filterCategory = document.getElementById('filterCategory');
+            filterCategory.innerHTML = `<option value="">All Categories</option>` +
+                categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        }
+
+        function renderTasks() {
+            const ul = document.getElementById('tasks');
+            const filterCategory = document.getElementById('filterCategory').value;
+            const filterStatus = document.getElementById('filterStatus').value;
+            const search = document.getElementById('searchTask').value.toLowerCase();
+
+            let tasks = allTasks.filter(task => {
+                let match = true;
+                if (filterCategory && task.category !== filterCategory) match = false;
+                if (filterStatus === 'active' && task.completed) match = false;
+                if (filterStatus === 'completed' && !task.completed) match = false;
+                if (search && !task.title.toLowerCase().includes(search) && !(task.category && task.category.toLowerCase().includes(search))) match = false;
+                return match;
+            });
+
+            ul.innerHTML = '';
+            if (tasks.length === 0) {
+                ul.innerHTML = `<li style="text-align:center;color:#aaa;">No tasks found.</li>`;
+                return;
+            }
+            tasks.forEach((task, i) => {
+                const li = document.createElement('li');
+                li.className = 'task-item' + (task.completed ? ' completed' : '');
+                li.innerHTML = `
+                    <div class="task-info">
+                        <span class="task-title">${task.title}</span>
+                        <span class="task-meta">
+                            ${task.category ? `<span>📁 ${task.category}</span>` : ''}
+                            ${task.deadline ? `<span>⏰ ${task.deadline}</span>` : ''}
+                        </span>
+                    </div>
+                    <div class="task-actions">
+                        ${!task.completed ? `<button class="complete-btn" data-action="complete" data-index="${i}">Complete</button>` : ''}
+                        <button class="edit-btn" data-action="edit" data-index="${i}">Edit</button>
+                        <button class="delete-btn" data-action="delete" data-index="${i}">Delete</button>
+                    </div>
+                `;
+                ul.appendChild(li);
+            });
+        }
+
+        function renderSchedule() {
+    const ul = document.getElementById('schedule');
+    // Sort tasks by deadline (ascending), only those with a deadline
+    let tasks = allTasks
+        .filter(task => task.deadline)
+        .sort((a, b) => a.deadline.localeCompare(b.deadline));
+    ul.innerHTML = '';
+    if (tasks.length === 0) {
+        ul.innerHTML = `<li style="text-align:center;color:#aaa;">No scheduled tasks.</li>`;
+        return;
+    }
+    tasks.forEach((task, i) => {
+        const li = document.createElement('li');
+        li.className = 'task-item' + (task.completed ? ' completed' : '');
+        li.innerHTML = `
+            <div class="task-info">
+                <span class="task-title">${task.title}</span>
+                <span class="task-meta">
+                    ${task.category ? `<span>📁 ${task.category}</span>` : ''}
+                    <span>⏰ ${task.deadline}</span>
+                </span>
+            </div>
+        `;
+        ul.appendChild(li);
+    });
+}
+
+// Tab switching logic
+document.getElementById('tab-tasks').onclick = function() {
+    this.classList.add('active');
+    document.getElementById('tab-schedule').classList.remove('active');
+    document.getElementById('tasks').style.display = '';
+    document.getElementById('schedule').style.display = 'none';
+    document.querySelector('.filter-bar').style.display = '';
+    renderTasks();
+};
+document.getElementById('tab-schedule').onclick = function() {
+    this.classList.add('active');
+    document.getElementById('tab-tasks').classList.remove('active');
+    document.getElementById('tasks').style.display = 'none';
+    document.getElementById('schedule').style.display = '';
+    document.querySelector('.filter-bar').style.display = 'none';
+    renderSchedule();
+};
+
+        function updateAndRender() {
+            saveTasks();
+            renderCategoryFilter(allTasks);
+            renderTasks();
+            renderSchedule();
+        }
+
+        document.getElementById('addForm').onsubmit = function(e) {
+            e.preventDefault();
+            allTasks.push({
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                deadline: document.getElementById('deadline').value,
+                completed: false
+            });
+            this.reset();
+            updateAndRender();
+        };
+
+        document.getElementById('tasks').onclick = function(e) {
+            if (e.target.tagName !== 'BUTTON') return;
+            const i = Number(e.target.getAttribute('data-index'));
+            const action = e.target.getAttribute('data-action');
+            if (action === 'complete') {
+                allTasks[i].completed = true;
+            } else if (action === 'delete') {
+                if (confirm('Delete this task?')) allTasks.splice(i, 1);
+            } else if (action === 'edit') {
+                const task = allTasks[i];
+                const newTitle = prompt('Edit title:', task.title);
+                if (newTitle === null) return;
+                const newCategory = prompt('Edit category:', task.category || '');
+                if (newCategory === null) return;
+                const newDeadline = prompt('Edit deadline (YYYY-MM-DD):', task.deadline || '');
+                if (newDeadline === null) return;
+                task.title = newTitle;
+                task.category = newCategory;
+                task.deadline = newDeadline;
+            }
+            updateAndRender();
+        };
+
+        document.getElementById('filterCategory').onchange =
+        document.getElementById('filterStatus').onchange =
+        document.getElementById('searchTask').oninput = renderTasks;
+
+        updateAndRender();
+      
+        
+        // ...existing code...
+// User session check and per-user tasks
+const currentUser = localStorage.getItem('currentUser');
+if (!currentUser) {
+    window.location.href = "login.html";
+}
+function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(allTasks));
+    // Save to user profile
+    let users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (users[currentUser]) {
+        users[currentUser].tasks = allTasks;
+        localStorage.setItem('users', JSON.stringify(users));
+    }
+}
+// ...existing code...
+    </script>
+</body>
+</html>
